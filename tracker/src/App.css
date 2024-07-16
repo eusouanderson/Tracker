@@ -15,38 +15,13 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 10vh; 
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-  padding: 20px; 
-}
-
-.App-header h1 {
-  margin: 0; 
-}
-
-.App-header nav {
-  margin-top: 20px; 
-}
-
-.App-header nav ul {
-  list-style-type: none; 
-  padding: 0;
-}
-
-.App-header nav ul li {
-  display: inline-block; 
-  margin-right: 15px; 
-}
-
-.App-header nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
 }
 
 .App-link {
