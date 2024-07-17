@@ -9,7 +9,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 
 app.use(cors());
@@ -28,11 +28,17 @@ mongoose.connect(MONGO_URI, {
 
 app.get('/dados-telemetry', async (req, res) => {
     try {
-        
-        const response = await axios.get('http://127.0.0.1:25555/api/ets2/telemetry ');
+        const { name } = req.query;
+        if (!name) {
+            return res.status(400).json({ error: 'Nome é necessário' });
+        }
+
+        const response = await axios.get('http://192.168.1.5:25555/api/ets2/telemetry');
         const telemetryData = response.data;
 
-        
+        // Adiciona o nome aos dados de telemetria
+        telemetryData.game.gameName = telemetryData.game.gameName || name;
+
         const telemetry = await Telemetry.create(telemetryData);
         console.log("Dados de telemetria salvos com sucesso:", telemetry);
 
@@ -41,7 +47,18 @@ app.get('/dados-telemetry', async (req, res) => {
         console.error("Erro ao obter e salvar dados de telemetria:", error);
         res.status(500).json({ error: 'Erro ao obter e salvar dados de telemetria' });
     }
+}); 
+
+app.get('/todos-dados-telemetry', async (req, res) => {
+    try {
+        const telemetry = await Telemetry.find({});
+        res.json(telemetry);
+    } catch (error) {
+        console.error("Erro ao buscar dados de telemetria:", error);
+        res.status(500).json({ error: 'Erro ao buscar dados de telemetria' });
+    }
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

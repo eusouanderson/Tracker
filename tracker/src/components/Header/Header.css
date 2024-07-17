@@ -1,0 +1,36 @@
+.game-header {
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #ff4500;
+    font-family: 'Press Start 2P', cursive;
+}
+
+.game-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.game-header nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.game-header nav ul li {
+    margin-left: 20px;
+}
+
+.game-header nav ul li a {
+    color: #f5f5f5;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.game-header nav ul li a:hover {
+    color: #ff4500;
+}
