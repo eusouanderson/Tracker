@@ -1,11 +1,19 @@
 import React from 'react';
-import HomePage from './pages/HomePage';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import HomePage from './pages/Home/HomePage';
+import Championships from './pages/Championship/Championship'; // Certifique-se de criar este componente
 
 function App() {
   return (
-    <div className="App">
-      <HomePage />
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/championships" element={<Championships />} />
+          {/* Adicione outras rotas conforme necessário */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

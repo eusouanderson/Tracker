@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './TelemetryData.css'
+import './TelemetryData.css';
 
 const TelemetryData = () => {
     const [name, setName] = useState('');
@@ -9,7 +9,6 @@ const TelemetryData = () => {
     const [error, setError] = useState(null);
     const [formSubmitted, setFormSubmitted] = useState(false);
 
-    // Carregar o nome salvo no localStorage ao montar o componente
     useEffect(() => {
         const savedName = localStorage.getItem('savedName');
         if (savedName) {
@@ -17,7 +16,6 @@ const TelemetryData = () => {
         }
     }, []);
 
-    // Salvar o nome no localStorage sempre que for alterado
     useEffect(() => {
         localStorage.setItem('savedName', name);
     }, [name]);
@@ -26,14 +24,12 @@ const TelemetryData = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get('http://localhost:5000/dados-telemetry', {
-                params: { name }
-            });
+            const response = await axios.get(`http://localhost:5000/dados-telemetry?name=${name}`);
             setData(response.data);
             setLoading(false);
             setFormSubmitted(true);
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Erro ao buscar dados:', error);
             setError(error);
             setLoading(false);
         }
@@ -53,28 +49,30 @@ const TelemetryData = () => {
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Enter your name"
+                        placeholder="Digite seu nome"
                         required
                         className="telemetry-input"
                     />
                     <button type="submit" className="telemetry-button">Enviar</button>
                 </form>
             )}
-            {loading && <p>Loading...</p>}
-            {error && <p>Error fetching data: {error.message}</p>}
+            {loading && <p>Carregando... Verifique se o Server foi instalado corretamente e está em execução.</p>}
+            {error && <p>Erro ao buscar dados: {error.message}</p>}
             {data && !loading && (
                 <div className="telemetry-data">
-                    <h3>Game Information</h3>
+                    <h3>Informações do Jogo</h3>
                     <p>Jogador Conectado: {name}</p>
-                    <p>Game Name: {data.game.gameName}</p>
-                    <h3>Truck Information</h3>
-                    <p>Truck Model: {data.truck.model}</p>
-                    <h3>Trailer Information</h3>
-                    <p>Trailer Attached: {data.trailer.attached ? 'Yes' : 'No'}</p>
-                    <h3>Job Information</h3>
-                    <p>Source City: {data.job.sourceCity}</p>
-                    <h3>Navigation Information</h3>
-                    <p>Estimated Distance: {data.navigation.estimatedDistance}</p>
+                    <p>Nome do Jogo: Euro Truck Simulator</p>
+                    <h3>Informações do Caminhão</h3>
+                    <p>Combustível do Caminhão: {data.truck?.fuel || 'N/A'}</p>
+                    <p>Velocidade do Caminhão: {data.truck?.speed || 'N/A'}</p>
+                    <p>Modelo do Caminhão: {data.truck?.model || 'N/A'}</p>
+                    <h3>Informações do Trailer</h3>
+                    <p>Trailer Conectado: {data.trailer?.attached ? 'Sim' : 'Não'}</p>
+                    <h3>Informações da Missão</h3>
+                    <p>Cidade de Origem: {data.job?.sourceCity || 'N/A'}</p>
+                    <h3>Informações de Navegação</h3>
+                    <p>Distância Estimada: {data.navigation?.estimatedDistance || 'N/A'}</p>
                 </div>
             )}
         </div>

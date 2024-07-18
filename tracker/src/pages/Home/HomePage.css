@@ -1,0 +1,26 @@
+.home-page {
+    font-family: Arial, sans-serif;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+.home-main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+}
+
+.home-main h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #222;
+}
+
+.home-main p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}

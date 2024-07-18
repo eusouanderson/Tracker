@@ -4,12 +4,8 @@ import './Footer.css';
 const Footer = () => {
     return (
         <footer className="game-footer">
-            <p>&copy; 2024 Game Tracker. All rights reserved.</p>
-            <p>Follow us on
-                <a href="https://twitter.com"> Twitter</a>,
-                <a href="https://facebook.com"> Facebook</a>,
-                <a href="https://instagram.com"> Instagram</a>
-            </p>
+            <p>&copy; 2024 Game Tracker. Todos os direitos reservados.</p>
+            <p>Desenvolvido por <a href="https://github.com/eusouanderson">eusouanderson</a> - B.O.B</p>
         </footer>
     );
 };
