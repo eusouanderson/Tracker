@@ -1,6 +1,16 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import isDev from 'electron-is-dev';
+import { spawn } from 'child_process';
+
+const startServer = () => {
+    // Inicie o servidor Node.js
+    const server = spawn('node', ['backend/mongo.js'], { stdio: 'inherit' });
+
+    server.on('close', (code) => {
+        console.log(`Servidor Node.js saiu com o código ${code}`);
+    });
+};
 
 const createWindow = () => {
     const mainWindow = new BrowserWindow({
@@ -23,7 +33,10 @@ const createWindow = () => {
     }
 };
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    startServer();
+    createWindow();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
