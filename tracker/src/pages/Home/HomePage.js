@@ -1,7 +1,7 @@
 import React from 'react';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
-import TelemetryData from '../../components/TelemetryData/TelemetryData';
+import Header from '../../components/Header/Header.js';
+import Footer from '../../components/Footer/Footer.js';
+import TelemetryData from '../../components/TelemetryData/TelemetryData.js';
 import './HomePage.css'
 
 const HomePage = () => {

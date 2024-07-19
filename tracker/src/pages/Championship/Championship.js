@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import './Championship.css';
 import axios from 'axios';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
+import Header from '../../components/Header/Header.js';
+import Footer from '../../components/Footer/Footer.js';
 
 const Championships = () => {
     const [telemetryData, setTelemetryData] = useState([]);

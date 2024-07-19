@@ -1,13 +1,13 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const axios = require('axios');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const Telemetry = require('./models/Telemetry');
-const http = require('http');
-const { Server } = require('socket.io');
+import express from 'express';
+import mongoose from 'mongoose';
+import axios from 'axios';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import Telemetry from './models/Telemetry.js';
+import http from 'http';
+import { Server } from 'socket.io';
+import dotenv from 'dotenv';
 
-const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
