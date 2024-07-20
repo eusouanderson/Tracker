@@ -25,15 +25,14 @@
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "client": "react-scripts start",
     "server": "node backend/mongo.js",
-    "prebuild": "copy src\\main.mjs build\\",
+    "prebuild": "copy src\\main.mjs build\\main.mjs",
     "build": "react-scripts build && npm run prebuild",
-    "dist": "npm run build && npm run server && electron-builder",
+    "dist": "npm run build && electron-builder",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
     "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run electron\""
   },
-
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -55,7 +54,7 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "electron": "^31.2.1",
-    "electron-builder": "^24.5.0"
+    "electron-builder": "^24.13.3"
   },
   "main": "src/main.mjs",
   "type": "module",
@@ -70,6 +69,8 @@
     ],
     "directories": {
       "output": "dist"
-    }
+    },
+    "entry": "src/main.mjs"
   }
+  
 }

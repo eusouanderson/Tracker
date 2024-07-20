@@ -19,7 +19,7 @@ function createWindow() {
     });
 
     // Verifique se a URL está correta
-    mainWindow.loadURL('http://localhost:3000'); // Certifique-se de que esta URL está correta
+    mainWindow.loadFile(path.join(__dirname, '../build/index.html'));
 }
 
 app.whenReady().then(() => {
