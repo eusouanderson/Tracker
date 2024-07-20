@@ -30,7 +30,7 @@ const TelemetryData = () => {
             setLoading(false);
             setFormSubmitted(true);
         } catch (error) {
-            console.error('Erro ao buscar dados:', error);
+            console.error('Erro ao buscar os dados:', error);
             setError(error);
             setLoading(false);
         }
