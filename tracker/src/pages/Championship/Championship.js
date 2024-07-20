@@ -68,6 +68,8 @@ const Championships = () => {
         });
     };
 
+   
+
     // Ordenar dados por Estimated Distance em ordem decrescente
     const sortedTelemetryData = [...telemetryData].sort((a, b) => b.navigation.estimatedDistance - a.navigation.estimatedDistance);
 

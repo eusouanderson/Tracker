@@ -1,51 +1,39 @@
+// main.mjs
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
-import isDev from 'electron-is-dev';
-import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
 
-const startServer = () => {
-    // Inicie o servidor Node.js
-    const server = spawn('node', ['backend/mongo.js'], { stdio: 'inherit' });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    server.on('close', (code) => {
-        console.log(`Servidor Node.js saiu com o código ${code}`);
-    });
-};
-
-const createWindow = () => {
+function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
+            enableRemoteModule: false,
+            nodeIntegration: false,
         }
     });
 
-    mainWindow.loadURL(
-        isDev
-            ? 'http://localhost:3000'
-            : `file://${path.join(__dirname, 'build', 'index.html')}`
-    );
-
-    if (isDev) {
-        mainWindow.webContents.openDevTools();
-    }
-};
+    // Verifique se a URL está correta
+    mainWindow.loadURL('http://localhost:3000'); // Certifique-se de que esta URL está correta
+}
 
 app.whenReady().then(() => {
-    startServer();
     createWindow();
+
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow();
+        }
+    });
 });
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
-    }
-});
-
-app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
     }
 });

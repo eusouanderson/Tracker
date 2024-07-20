@@ -7,8 +7,11 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.2",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "electron-is-dev": "^3.0.1",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -19,7 +22,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\" \"npm run electron\"",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
     "client": "react-scripts start",
     "server": "node backend/mongo.js",
     "prebuild": "copy src\\main.mjs build\\",
@@ -30,6 +33,7 @@
     "electron": "electron .",
     "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run electron\""
   },
+
   "eslintConfig": {
     "extends": [
       "react-app",

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TelemetryData.css';
 
+
 const TelemetryData = () => {
     const [name, setName] = useState('');
     const [data, setData] = useState(null);
