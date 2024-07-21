@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Large file ignored by Git
+/tracker/dist/win-unpacked/resources/app.asar
