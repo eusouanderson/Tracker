@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './TelemetryData.css';
-
+//import './TelemetryData.css';
+import '../../assets/global.css';
 
 const TelemetryData = () => {
     const [name, setName] = useState('');
@@ -61,19 +61,10 @@ const TelemetryData = () => {
             {error && <p>Erro ao buscar dados: {error.message}</p>}
             {data && !loading && (
                 <div className="telemetry-data">
-                    <h3>Informações do Jogo</h3>
+                    <h3>Conecção estabelecida :</h3>
                     <p>Jogador Conectado: {name}</p>
                     <p>Nome do Jogo: Euro Truck Simulator</p>
-                    <h3>Informações do Caminhão</h3>
-                    <p>Combustível do Caminhão: {data.truck?.fuel || 'N/A'}</p>
-                    <p>Velocidade do Caminhão: {data.truck?.speed || 'N/A'}</p>
-                    <p>Modelo do Caminhão: {data.truck?.model || 'N/A'}</p>
-                    <h3>Informações do Trailer</h3>
-                    <p>Trailer Conectado: {data.trailer?.attached ? 'Sim' : 'Não'}</p>
-                    <h3>Informações da Missão</h3>
-                    <p>Cidade de Origem: {data.job?.sourceCity || 'N/A'}</p>
-                    <h3>Informações de Navegação</h3>
-                    <p>Distância Estimada: {data.navigation?.estimatedDistance || 'N/A'}</p>
+                    <h3>Vá para a página de Championships</h3>
                 </div>
             )}
         </div>

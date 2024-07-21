@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import './Championship.css';
 import axios from 'axios';
 import Header from '../../components/Header/Header.js';
 import Footer from '../../components/Footer/Footer.js';
+import '../../assets/global.css';
 
 const Championships = () => {
     const [telemetryData, setTelemetryData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [expandedIndex, setExpandedIndex] = useState(null); // Estado para controlar a visibilidade das informações do truck
+    const [expandedIndex, setExpandedIndex] = useState(null);
+    const [expandedJobIndex, setExpandedJobIndex] = useState(null);
+    const [showTrailerData, setShowTrailerData] = useState(null);
 
     useEffect(() => {
-        // Conectar ao servidor Socket.IO
         const socket = io('http://localhost:5000');
 
-        // Função para buscar dados iniciais
         const fetchTelemetryData = async () => {
             try {
                 const response = await axios.get('http://localhost:5000/todos-dados-telemetry');
@@ -30,18 +30,59 @@ const Championships = () => {
 
         fetchTelemetryData();
 
-        // Escutar por atualizações de telemetria do servidor
         socket.on('telemetryUpdate', (data) => {
             setTelemetryData(data);
         });
 
-        // Limpar a conexão quando o componente for desmontado
         return () => {
             socket.disconnect();
         };
     }, []);
 
-    // Funções para formatação de data e ajuste de tempo
+    const calculateScore = (data) => {
+        let score = 0;
+
+        // Distância percorrida
+        score += data.navigation.estimatedDistance * 3;
+
+        // Tempo de jogo
+        const gameTime = new Date(data.game.time);
+        const currentTime = new Date();
+        const timeDiff = (currentTime - gameTime) / (1000 * 60 * 60); // em horas
+        score += timeDiff * 2;
+
+        // Cumprimento de prazo
+        const deadlineTime = new Date(data.job.deadlineTime);
+        if (currentTime <= deadlineTime) {
+            score += 500;
+        }
+
+        // Penalidades
+        if (data.truck.fuel < (data.truck.fuelCapacity * 0.10)) {
+            score -= 2000;
+        }
+
+        const damagePercentage = (
+            data.truck.wearEngine +
+            data.truck.wearTransmission +
+            data.truck.wearCabin +
+            data.truck.wearChassis +
+            data.truck.wearWheels
+        ) / 5;
+        score -= damagePercentage * 1000 * 0.1;
+
+        // Bônus
+        if (data.truck.speed <= data.navigation.speedLimit) {
+            score += data.truck.speed * 0.1;
+        }
+
+        if (data.truck.fuelAverageConsumption < 10) {
+            score += 50;
+        }
+
+        return score;
+    };
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleString('pt-BR', {
@@ -56,7 +97,7 @@ const Championships = () => {
 
     const adjustGameTime = (gameTime, timeScale) => {
         const time = new Date(gameTime);
-        const realTimeMs = timeScale * 1000; // Escala do tempo
+        const realTimeMs = timeScale * 1000;
         const adjustedTime = new Date(time.getTime() * realTimeMs);
         return adjustedTime.toLocaleString('pt-BR', {
             year: 'numeric',
@@ -68,13 +109,20 @@ const Championships = () => {
         });
     };
 
-   
-
-    // Ordenar dados por Estimated Distance em ordem decrescente
-    const sortedTelemetryData = [...telemetryData].sort((a, b) => b.navigation.estimatedDistance - a.navigation.estimatedDistance);
+    const sortedTelemetryData = telemetryData
+        .map(data => ({ ...data, score: calculateScore(data) })) // Adiciona a pontuação a cada entrada de dados
+        .sort((a, b) => b.score - a.score); // Ordena pela pontuação em ordem decrescente
 
     const toggleTruckInfo = (index) => {
         setExpandedIndex(expandedIndex === index ? null : index);
+    };
+
+    const toggleJobInfo = (index) => {
+        setExpandedJobIndex(expandedJobIndex === index ? null : index);
+    };
+
+    const toggleTrailerInfo = (index) => {
+        setShowTrailerData(showTrailerData === index ? null : index);
     };
 
     return (
@@ -94,25 +142,37 @@ const Championships = () => {
                             <p><span>Jogo Pausado:</span> {data.game.paused ? 'Sim' : 'Não'}</p>
                             <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game.nextRestStopTime)}</p>
                             <p><span>Versão do Plugin de Telemetria:</span> {data.game.telemetryPluginVersion}</p>
+                            <p><span>Pontuação:</span> {data.score}</p>
 
-                            <h2>Dados do Trabalho</h2>
+                            <button
+                                className="toggle-button"
+                                onClick={() => toggleJobInfo(index)}
+                            >
+                                {expandedJobIndex === index ? 'Ocultar Dados do Trabalho' : 'Mostrar Dados do Trabalho'}
+                            </button>
 
-                            <p><span>Dados de Trabalho:</span> {data.job.income}</p>
-                            <p><span>Tempo de Trabalho:</span> {formatDate(data.job.deadlineTime)}</p>
-                            <p><span>Cidade Destino : </span><span>{data.job.destinationCity}</span></p>
-                            <p><span>Empresa Destino : </span><span>{data.job.destinationCompany}</span></p>
-
-                            <h2>Dados da Navegação</h2>
-
-                            <p><span>Distância Estimada:</span> {data.navigation.estimatedDistance}</p>
-                            <p><span>Tempo Estimado:</span> {formatDate(data.navigation.estimatedTime)}</p> 
-                            <p><span> Limite de Velocidade: </span><span>{data.navigation.speedLimit}</span></p>
+                            {expandedJobIndex === index && (
+                                <div className="job-data">
+                                    <h2>Dados do Trabalho</h2>
+                                    <p><span>Dados de Trabalho:</span> {data.job.income}</p>
+                                    <p><span>Tempo de Trabalho:</span> {formatDate(data.job.deadlineTime)}</p>
+                                    <p><span>Cidade Destino : </span><span>{data.job.destinationCity}</span></p>
+                                    <p><span>Empresa Destino : </span><span>{data.job.destinationCompany}</span></p>
+                                </div>
+                            )}
 
                             <button
                                 className="toggle-button"
                                 onClick={() => toggleTruckInfo(index)}
                             >
-                                {expandedIndex === index ? 'Ocultar Dados do Caminhão e Reboque' : 'Mostrar Dados do Caminhão e Reboque'}
+                                {expandedIndex === index ? 'Ocultar Dados do Caminhão' : 'Mostrar Dados do Caminhão'}
+                            </button>
+
+                            <button
+                                className="toggle-button"
+                                onClick={() => toggleTrailerInfo(index)}
+                            >
+                                {showTrailerData === index ? 'Ocultar Dados do Reboque' : 'Mostrar Dados do Reboque'}
                             </button>
 
                             {expandedIndex === index && (
@@ -128,15 +188,14 @@ const Championships = () => {
                                     <p><span>Modelo do Caminhão:</span> {data.truck.model}</p>
                                     <p><span>Saúde do Caminhão:</span> {data.truck.health}</p>
                                     <p><span>Combustível do Caminhão:</span> {data.truck.fuel}</p>
-                                    
                                     <p><span>Capacidade de Combustível do Caminhão:</span> {data.truck.fuelCapacity}</p>
-                                    
                                     <p><span>Reboque Conectado:</span> {data.trailer.attached ? 'Sim' : 'Não'}</p>
                                     <p><span>Cidade de Origem:</span> {data.job.sourceCity}</p>
                                     <p><span>Distância Estimada:</span> {data.navigation.estimatedDistance}</p>
                                 </div>
                             )}
-                            {expandedIndex === index && (
+
+                            {showTrailerData === index && (
                                 <div className="trailer-data">
                                     <h3>Dados do Reboque</h3>
                                     <p><span>ID do Reboque:</span> {data.trailer.id}</p>

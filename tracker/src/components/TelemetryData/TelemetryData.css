@@ -1,16 +1,18 @@
-/* styles.css (ou qualquer outro nome que você preferir) */
-
 .telemetry-container {
-    max-width: 600px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f0f0f0;
+    background-color: #3b3d3f;
+    /* Cor de fundo escura */
+    color: #d9e8e8;
+    /* Cor do texto clara */
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(237, 207, 207, 0.1);
 }
 
 .telemetry-form {
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .telemetry-input {
@@ -20,12 +22,17 @@
     border-radius: 4px;
     width: calc(100% - 85px);
     /* Ajuste conforme necessário */
+    background-color: #34495e;
+    /* Cor de fundo do input */
+    color: #06b5e1;
+    /* Cor do texto do input */
 }
 
 .telemetry-button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #4CAF50;
+    background-color: #3498db;
+    /* Cor de fundo do botão */
     color: white;
     border: none;
     border-radius: 4px;
@@ -34,14 +41,15 @@
 }
 
 .telemetry-button:hover {
-    background-color: #45a049;
+    background-color: #2980b9;
+    /* Cor de fundo do botão ao passar o mouse */
 }
 
 .telemetry-data {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 8px rgba(223, 212, 212, 0.1);
 }
 
 .telemetry-data h2 {
@@ -58,33 +66,4 @@
 .telemetry-data p {
     font-size: 16px;
     line-height: 1.5;
-}
-
-
-.telemetry-container {
-    background-color: #000000;
-    /* Cor de fundo escura */
-    color: #4ea2b7;
-    /* Cor do texto clara */
-}
-
-.telemetry-form {
-    text-align: center;
-}
-
-.telemetry-input {
-    background-color: #34495e;
-    /* Cor de fundo do input */
-    color: #ecf0f1;
-    /* Cor do texto do input */
-}
-
-.telemetry-button {
-    background-color: #3498db;
-    /* Cor de fundo do botão */
-}
-
-.telemetry-button:hover {
-    background-color: #2980b9;
-    /* Cor de fundo do botão ao passar o mouse */
 }

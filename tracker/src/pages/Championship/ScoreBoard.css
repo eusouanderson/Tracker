@@ -1,0 +1,24 @@
+.scoreboard-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scoreboard-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.scoreboard-item h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.scoreboard-item p {
+    margin: 5px 0;
+    font-size: 16px;
+}

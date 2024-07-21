@@ -3,6 +3,7 @@ import Header from '../../components/Header/Header.js';
 import Footer from '../../components/Footer/Footer.js';
 import TelemetryData from '../../components/TelemetryData/TelemetryData.js';
 import './HomePage.css'
+import '../../assets/global.css';
 
 const HomePage = () => {
     return (
