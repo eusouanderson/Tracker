@@ -178,8 +178,6 @@ footer a:hover {
     margin-top: 10px;
 }
 
-
-
 /* Estilo para mensagens de carregamento e erro */
 .loading,
 .error {
@@ -214,11 +212,15 @@ footer a:hover {
     margin: 10px 0;
 }
 
-/* Estilo para o Telemetry Data dentro da Home Page */
 .telemetry-data {
     background-color: var(--primary-color);
     padding: 15px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     margin-top: 20px;
+}
+
+.score {
+    color: red;
+    font-weight: bold;
 }

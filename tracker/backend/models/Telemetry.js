@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 // Definindo o schema para Telemetry
 const telemetrySchema = new mongoose.Schema({
@@ -150,4 +150,4 @@ const telemetrySchema = new mongoose.Schema({
 // Definindo o modelo Telemetry
 const Telemetry = mongoose.model('Telemetry', telemetrySchema);
 
-export default Telemetry;
+module.exports = Telemetry;

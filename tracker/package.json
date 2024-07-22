@@ -2,6 +2,8 @@
   "name": "tracker",
   "version": "0.1.0",
   "private": true,
+  "description": "Um aplicativo para jogadores de Euro Truck Simulator 2 (ETS2) onde eles competem para ver quem dirige melhor.",
+  "author": "Anderson Rodrigues",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -22,16 +24,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "electron .",
     "client": "react-scripts start",
-    "server": "node backend/mongo.js",
-    "prebuild": "copy src\\main.mjs build\\main.mjs",
-    "build": "react-scripts build && npm run prebuild",
-    "dist": "npm run build && electron-builder",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "electron": "electron .",
-    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run electron\""
+    "server": "node backend/mongo.mjs",
+    "build": "react-scripts build",
+    "dist": "npm run build && electron-builder"
   },
   "eslintConfig": {
     "extends": [
@@ -56,21 +53,24 @@
     "electron": "^31.2.1",
     "electron-builder": "^24.13.3"
   },
-  "main": "src/main.mjs",
-  "type": "module",
+  "main": "public/electron.js",
   "build": {
     "appId": "com.example.tracker",
     "productName": "Tracker",
     "files": [
       "build/**/*",
-      "backend/**/*",
-      "src/main.mjs",
+      "public/**/*",
+      "src/**/*", 
+      "backend/**/*", 
       "package.json"
     ],
     "directories": {
       "output": "dist"
     },
-    "entry": "src/main.mjs"
-  }
-  
+    
+    "asarUnpack": [
+      "src/main.mjs"
+    ]
+  },
+  "homepage": "."
 }

@@ -1,18 +1,16 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import axios from 'axios';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import Telemetry from './models/Telemetry.js';
-import User from './models/User.js';
-import http from 'http';
-import { Server } from 'socket.io';
-import dotenv from 'dotenv';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import envoriments from './envoriments/envoriments.js';
+const express = require('express');
+const mongoose = require('mongoose');
+const axios = require('axios');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const Telemetry = require('./models/Telemetry');
+const http = require('http');
+const { Server } = require('socket.io');
+const dotenv = require('dotenv');
+const envoriments = require('./envoriments/envoriments');
 
-
+// Carregar variáveis de ambiente
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
@@ -28,10 +26,7 @@ app.use(bodyParser.json());
 // Configurar a URI do MongoDB usando variáveis de ambiente
 const MONGO_URI = `mongodb+srv://${envoriments.MONGO_USER}:${envoriments.MONGO_PASSWORD}@${envoriments.MONGO_CLUSTER}/farmSimulator?retryWrites=true&w=majority`;
 
-mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(MONGO_URI)
     .then(() => console.log('Conectado ao MongoDB'))
     .catch(err => console.error('Erro ao conectar com o MongoDB:', err));
 
@@ -44,11 +39,12 @@ const emitTelemetryUpdates = async () => {
     }
 };
 
-const updateTelemetryData = async (name) => {
+const updateTelemetryData = async (name, connected) => {
     try {
         const response = await axios.get(envoriments.API_SERVER);
         const telemetryData = response.data;
         telemetryData.game.gameName = name;
+        telemetryData.game.connected = connected;
 
         let telemetry = await Telemetry.findOne({ 'game.gameName': name });
 
@@ -77,12 +73,15 @@ app.get('/dados-telemetry', async (req, res) => {
             return res.status(400).json({ error: 'Nome é necessário' });
         }
 
-        const intervalId = setInterval(() => updateTelemetryData(name), 1000);
+        const intervalId = setInterval(() => updateTelemetryData(name, true), 1000);
 
         io.on('connection', (socket) => {
             console.log('Cliente conectado:', name);
+            updateTelemetryData(name, true);
+
             socket.on('disconnect', () => {
                 console.log('Cliente desconectado:', name);
+                updateTelemetryData(name, false);
                 clearInterval(intervalId);
             });
         });
@@ -115,3 +114,19 @@ io.on('connection', (socket) => {
 server.listen(envoriments.PORT_SERVER, () => {
     console.log(`Server running on http://localhost:${envoriments.PORT_SERVER}`);
 });
+
+// Manipulador de término para encerrar o servidor corretamente
+const shutdown = (signal) => {
+    console.log(`Recebido sinal de ${signal}. Fechando o servidor...`);
+    server.close(() => {
+        console.log('Servidor encerrado.');
+        mongoose.disconnect(() => {
+            console.log('Desconectado do MongoDB.');
+            process.exit(0);
+        });
+    });
+};
+
+// Capturar sinais de término (como Ctrl+C)
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));

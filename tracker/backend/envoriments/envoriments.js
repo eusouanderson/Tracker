@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 
 dotenv.config();
 
@@ -13,4 +13,5 @@ const envoriments = {
 };
 
 console.log(envoriments);
-export default envoriments;
+
+module.exports = envoriments;

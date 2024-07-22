@@ -42,46 +42,48 @@ const Championships = () => {
     const calculateScore = (data) => {
         let score = 0;
 
-        // Distância percorrida
-        score += data.navigation.estimatedDistance * 3;
+        if (data.game.connected && data.game.gameName !== "null") {
+            
+        
+            
+            const gameTime = new Date(data.game.time);
+            const currentTime = new Date();
+            const timeDiff = (currentTime - gameTime) / (1000 * 60 * 60);
+            score += timeDiff * 100000;
 
-        // Tempo de jogo
-        const gameTime = new Date(data.game.time);
-        const currentTime = new Date();
-        const timeDiff = (currentTime - gameTime) / (1000 * 60 * 60); // em horas
-        score += timeDiff * 2;
+            
+            const deadlineTime = new Date(data.job.deadlineTime);
+            if (currentTime <= deadlineTime) {
+                score += 200; // Ajustado para 200
+            }
 
-        // Cumprimento de prazo
-        const deadlineTime = new Date(data.job.deadlineTime);
-        if (currentTime <= deadlineTime) {
-            score += 500;
-        }
+            // Penalidades
+            if (data.truck.fuel < (data.truck.fuelCapacity * 0.10)) {
+                score -= 2000; // Mantido alto
+            }
 
-        // Penalidades
-        if (data.truck.fuel < (data.truck.fuelCapacity * 0.10)) {
-            score -= 2000;
-        }
+            const damagePercentage = (
+                data.truck.wearEngine +
+                data.truck.wearTransmission +
+                data.truck.wearCabin +
+                data.truck.wearChassis +
+                data.truck.wearWheels
+            ) / 5;
+            score -= damagePercentage * 1000 * 0.2; // Mantido alto
 
-        const damagePercentage = (
-            data.truck.wearEngine +
-            data.truck.wearTransmission +
-            data.truck.wearCabin +
-            data.truck.wearChassis +
-            data.truck.wearWheels
-        ) / 5;
-        score -= damagePercentage * 1000 * 0.1;
+            // Bônus
+            if (data.truck.speed <= data.navigation.speedLimit) {
+                score += data.truck.speed * 100;
+            }
 
-        // Bônus
-        if (data.truck.speed <= data.navigation.speedLimit) {
-            score += data.truck.speed * 0.1;
-        }
-
-        if (data.truck.fuelAverageConsumption < 10) {
-            score += 50;
+            if (data.truck.fuelAverageConsumption < 10) {
+                score += 100; // Ajustado para 100
+            }
         }
 
         return score;
     };
+    
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -137,12 +139,13 @@ const Championships = () => {
                         <div key={index} className="championship-item">
                             <h1>{index + 1}° Posição - Motorista: {data.game.gameName}</h1>
                             <p><span>Jogador Conectado:</span> {data.game.connected ? 'Sim' : 'Não'}</p>
+                            <p><span>Nome do Jogo :</span> {data.game.connected ? 'Sim' : 'Não'}</p>
                             <p><span>Tempo de Jogo:</span> {formatDate(data.game.time)}</p>
                             <p><span>Tempo Ajustado:</span> {adjustGameTime(data.game.time, data.game.timeScale)}</p>
                             <p><span>Jogo Pausado:</span> {data.game.paused ? 'Sim' : 'Não'}</p>
                             <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game.nextRestStopTime)}</p>
                             <p><span>Versão do Plugin de Telemetria:</span> {data.game.telemetryPluginVersion}</p>
-                            <p><span>Pontuação:</span> {data.score}</p>
+                            <p className='score'><span>Pontuação:</span> {data.score.toFixed(2)}</p>
 
                             <button
                                 className="toggle-button"
