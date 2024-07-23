@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const axios = require('axios');
 const cors = require('cors');
@@ -111,8 +112,18 @@ io.on('connection', (socket) => {
     });
 });
 
+// Servir arquivos estáticos da build
+const buildPath = path.join(__dirname, '..', 'build');
+
+app.use(express.static(buildPath));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(buildPath, '..', 'build', 'index.html'));
+});
+
 server.listen(envoriments.PORT_SERVER, () => {
     console.log(`Server running on http://localhost:${envoriments.PORT_SERVER}`);
+    console.log('Caminho da build do index:', path.join(buildPath, '..', 'build', 'index.html'));
 });
 
 // Manipulador de término para encerrar o servidor corretamente

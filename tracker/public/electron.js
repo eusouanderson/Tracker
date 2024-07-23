@@ -1,96 +1,68 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { exec } = require('child_process');
-const net = require('net');
+
+// Caminho para o backend
+const backendPath = path.join(__dirname, '../backend/mongo.js');
 
 let mainWindow;
+let backendProcess;
 
+// Função para criar a janela principal
 function createWindow() {
     mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, 'public/preload.js'),
-            contextIsolation: true,
-            enableRemoteModule: false,
-            nodeIntegration: false
+            nodeIntegration: true,
+            contextIsolation: false,
+            webSecurity: false,
+            preload: path.join(__dirname, 'preload.js'), // Caminho absoluto para preload.js
         }
     });
 
-    
-    const httpURL = 'http://localhost:3000/';
-
-    
-    mainWindow.loadURL(httpURL);
+    // Carregar a URL do frontend
+    mainWindow.loadURL('http://localhost:5000');
 }
 
-
-function checkPortInUse(port) {
-    return new Promise((resolve) => {
-        const server = net.createServer();
-        server.once('error', (err) => {
-            if (err.code === 'EADDRINUSE') {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
-        });
-        server.once('listening', () => {
-            server.close(() => resolve(false));
-        });
-        server.listen(port);
-    });
-}
-
-// Função para iniciar os servidores
-function startServers() {
-    return new Promise((resolve, reject) => {
-        exec('node start-servers.js', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Erro ao iniciar os servidores: ${error}`);
-                reject(error);
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-            }
-            console.log(`Servidores iniciados: ${stdout}`);
-            resolve();
-        });
-    });
-}
-
-// Função para iniciar o aplicativo Electron
-async function startApp() {
-    try {
-        const { default: isDev } = await import('electron-is-dev');
-        const PORT_SERVER = 5000; // Porta que você está usando para os servidores
-
-        const isPortInUse = await checkPortInUse(PORT_SERVER);
-        if (!isPortInUse) {
-            await startServers();
-        } else {
-            console.log(`Porta ${PORT_SERVER} já está em uso, presumindo que os servidores já estão em execução.`);
+// Função para iniciar o backend
+function startBackend() {
+    backendProcess = exec(`node ${backendPath}`, (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error starting backend: ${error.message}`);
+            return;
         }
+        if (stderr) {
+            console.error(`Backend stderr: ${stderr}`);
+            return;
+        }
+        console.log(`Backend stdout: ${stdout}`);
+    });
 
-        app.whenReady().then(() => {
-            createWindow(isDev);
+    // Adicionar manipuladores para eventos do processo backend
+    backendProcess.on('exit', (code) => {
+        console.log(`Backend process exited with code ${code}`);
+    });
+}
 
-            app.on('activate', () => {
-                if (BrowserWindow.getAllWindows().length === 0) {
-                    createWindow(isDev);
-                }
-            });
-        });
+// Iniciar o backend e criar a janela principal do Electron
+app.whenReady().then(() => {
+    startBackend();
+    createWindow();
+});
 
-        app.on('window-all-closed', () => {
-            app.quit();
-        });
-
-
-    } catch (err) {
-        console.error('Erro ao iniciar o aplicativo:', err);
+// Encerrar o backend ao fechar a aplicação
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+        if (backendProcess) {
+            backendProcess.kill();
+        }
+        app.quit();
     }
-}
+});
 
-// Executar a função para iniciar o aplicativo
-startApp();
+app.on('activate', () => {
+    if (mainWindow === null) {
+        createWindow();
+    }
+});

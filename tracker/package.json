@@ -2,8 +2,13 @@
   "name": "tracker",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
+  "author": {
+    "name": "Anderson Rodrigues",
+    "url": "https://github.com/eusouanderson",
+    "email": "eusouanderson@outlook.com"
+  },
   "description": "Um aplicativo para jogadores de Euro Truck Simulator 2 (ETS2) onde eles competem para ver quem dirige melhor.",
-  "author": "Anderson Rodrigues",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -24,11 +29,16 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "electron .",
-    "client": "react-scripts start",
-    "server": "node backend/mongo.mjs",
-    "build": "react-scripts build",
-    "dist": "npm run build && electron-builder"
+    "start:electron": "electron public/electron.js",
+    "start": "react-scripts start",
+    "server": "node backend/mongo.js",
+    "build": "react-scripts build && npm run build:backend",
+    "build:backend": "mkdir dist\\backend && xcopy backend\\* dist\\backend /s /e /i /y",
+    "dist": "npm run build && electron-builder",
+    "test": "react-scripts test",
+    "test:electron": "electron --trace-warnings .",
+    "compile:backend": "ncc build backend/mongo.js -o dist/backend",
+    "package:backend": "pkg dist/backend/index.js --targets node16-win-x64 --output backend/server.exe"
   },
   "eslintConfig": {
     "extends": [
@@ -51,7 +61,9 @@
   "devDependencies": {
     "concurrently": "^8.2.2",
     "electron": "^31.2.1",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "ncc": "^0.31.1",
+    "pkg": "^5.8.2"
   },
   "main": "public/electron.js",
   "build": {
@@ -59,18 +71,15 @@
     "productName": "Tracker",
     "files": [
       "build/**/*",
-      "public/**/*",
-      "src/**/*", 
-      "backend/**/*", 
-      "package.json"
+      "node_modules/**/*",
+      "backend/**/*",
+      "public/**/*"
     ],
     "directories": {
       "output": "dist"
     },
-    
     "asarUnpack": [
-      "src/main.mjs"
+      "backend/**/*"
     ]
-  },
-  "homepage": "."
+  }
 }

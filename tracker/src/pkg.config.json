@@ -1,0 +1,14 @@
+{
+    "assets": [
+        "node_modules/axios/**/*",
+        "node_modules/bson/**/*",
+        "node_modules/mongodb/**/*",
+        "envoriments/**/*",
+        "models/**/*",
+        "build/**/*"
+    ],
+    "scripts": [
+        "mongo.js"
+    ],
+    "entry": "dist/index.js"
+}
