@@ -113,12 +113,14 @@ io.on('connection', (socket) => {
 });
 
 // Servir arquivos estáticos da build
-const buildPath = path.join(__dirname, '..', 'build');
+const buildPath = path.join(path.dirname(process.execPath), 'build');
 
 app.use(express.static(buildPath));
 
+
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(buildPath, '..', 'build', 'index.html'));
+    res.sendFile(path.join(buildPath, 'index.html'));
 });
 
 server.listen(envoriments.PORT_SERVER, () => {

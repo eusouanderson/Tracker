@@ -32,13 +32,12 @@
     "start:electron": "electron public/electron.js",
     "start": "react-scripts start",
     "server": "node backend/mongo.js",
-    "build": "react-scripts build && npm run build:backend",
-    "build:backend": "mkdir dist\\backend && xcopy backend\\* dist\\backend /s /e /i /y",
+    "build": "react-scripts build ",
+    "compile:backend": "ncc build backend/mongo.js -o backend && cp -r build backend/build",
+    "package:backend": "pkg backend/index.js --targets node16-win-x64 --output backend/server.exe",
     "dist": "npm run build && electron-builder",
     "test": "react-scripts test",
-    "test:electron": "electron --trace-warnings .",
-    "compile:backend": "ncc build backend/mongo.js -o dist/backend",
-    "package:backend": "pkg dist/backend/index.js --targets node16-win-x64 --output backend/server.exe"
+    "test:electron": "electron --trace-warnings ."
   },
   "eslintConfig": {
     "extends": [

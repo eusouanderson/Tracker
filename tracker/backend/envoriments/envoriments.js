@@ -12,6 +12,6 @@ const envoriments = {
     JWT_SECRET: process.env.JWT_SECRET,
 };
 
-console.log(envoriments);
+
 
 module.exports = envoriments;
