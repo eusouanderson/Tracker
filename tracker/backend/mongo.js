@@ -1,3 +1,5 @@
+process.title = 'MongoDB';
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -67,6 +69,16 @@ const updateTelemetryData = async (name, connected) => {
     }
 };
 
+// Servir arquivos estáticos da build
+const isDev = process.env.NODE_ENV === 'production';
+const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
+
+app.use(express.static(buildPath));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+});
+
 app.get('/dados-telemetry', async (req, res) => {
     try {
         const { name } = req.query;
@@ -112,22 +124,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Servir arquivos estáticos da build
-const buildPath = path.join(path.dirname(process.execPath), 'build');
-
-app.use(express.static(buildPath));
-
-
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-});
-
-server.listen(envoriments.PORT_SERVER, () => {
-    console.log(`Server running on http://localhost:${envoriments.PORT_SERVER}`);
-    console.log('Caminho da build do index:', path.join(buildPath, '..', 'build', 'index.html'));
-});
-
 // Manipulador de término para encerrar o servidor corretamente
 const shutdown = (signal) => {
     console.log(`Recebido sinal de ${signal}. Fechando o servidor...`);
@@ -139,6 +135,11 @@ const shutdown = (signal) => {
         });
     });
 };
+
+server.listen(envoriments.PORT_SERVER, () => {
+    console.log(`Server running on http://localhost:${envoriments.PORT_SERVER}`);
+    console.log('Caminho da build do index:', buildPath);
+});
 
 // Capturar sinais de término (como Ctrl+C)
 process.on('SIGINT', () => shutdown('SIGINT'));

@@ -3,12 +3,12 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const envoriments = {
-    MONGO_USER: process.env.MONGO_USER,
-    MONGO_PASSWORD: process.env.MONGO_PASSWORD,
-    MONGO_CLUSTER: process.env.MONGO_CLUSTER,
+    MONGO_USER: 'eusouanderson',
+    MONGO_PASSWORD: '67983527',
+    MONGO_CLUSTER: 'cluster0.fuidnmk.mongodb.net',
     PORT_SERVER: 5000,
-    API_URL: process.env.API_URL,
-    API_SERVER: process.env.API_SERVER,
+    API_URL: 'http://localhost:5000',
+    API_SERVER: 'http://localhost:25555/api/ets2/telemetry',
     JWT_SECRET: process.env.JWT_SECRET,
 };
 

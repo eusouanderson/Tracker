@@ -32,7 +32,7 @@
     "start:electron": "electron public/electron.js",
     "start": "react-scripts start",
     "server": "node backend/mongo.js",
-    "build": "react-scripts build ",
+    "build": "react-scripts build && electron-builder build",
     "compile:backend": "ncc build backend/mongo.js -o backend && cp -r build backend/build",
     "package:backend": "pkg backend/index.js --targets node16-win-x64 --output backend/server.exe",
     "dist": "npm run build && electron-builder",
@@ -63,6 +63,7 @@
     "electron-builder": "^24.13.3",
     "ncc": "^0.31.1",
     "pkg": "^5.8.2"
+    
   },
   "main": "public/electron.js",
   "build": {

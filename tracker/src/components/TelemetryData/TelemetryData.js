@@ -9,7 +9,7 @@ const TelemetryData = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [formSubmitted, setFormSubmitted] = useState(false);
-
+    const API_BASE_URL = `${window.location.protocol}//${window.location.host}`;
     useEffect(() => {
         const savedName = localStorage.getItem('savedName');
         if (savedName) {
@@ -25,7 +25,7 @@ const TelemetryData = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`http://localhost:5000/dados-telemetry?name=${name}`);
+            const response = await axios.get(`${API_BASE_URL}/dados-telemetry?name=${name}`);
             setData(response.data);
             setLoading(false);
             setFormSubmitted(true);

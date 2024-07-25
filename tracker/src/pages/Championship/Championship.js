@@ -13,12 +13,16 @@ const Championships = () => {
     const [expandedJobIndex, setExpandedJobIndex] = useState(null);
     const [showTrailerData, setShowTrailerData] = useState(null);
 
+    const API_BASE_URL = `${window.location.protocol}//${window.location.host}`;
+
     useEffect(() => {
-        const socket = io('http://localhost:5000');
+        const socket = io(API_BASE_URL);
 
         const fetchTelemetryData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/todos-dados-telemetry');
+                const URL = `${API_BASE_URL}/todos-dados-telemetry`;
+                console.log('URL:', URL);
+                const response = await axios.get(URL);
                 setTelemetryData(response.data);
                 setLoading(false);
             } catch (error) {
@@ -37,21 +41,17 @@ const Championships = () => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [API_BASE_URL]); 
 
     const calculateScore = (data) => {
         let score = 0;
 
         if (data.game.connected && data.game.gameName !== "null") {
-            
-        
-            
             const gameTime = new Date(data.game.time);
             const currentTime = new Date();
             const timeDiff = (currentTime - gameTime) / (1000 * 60 * 60);
             score += timeDiff * 100000;
 
-            
             const deadlineTime = new Date(data.job.deadlineTime);
             if (currentTime <= deadlineTime) {
                 score += 200; // Ajustado para 200
@@ -83,7 +83,6 @@ const Championships = () => {
 
         return score;
     };
-    
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -139,7 +138,6 @@ const Championships = () => {
                         <div key={index} className="championship-item">
                             <h1>{index + 1}° Posição - Motorista: {data.game.gameName}</h1>
                             <p><span>Jogador Conectado:</span> {data.game.connected ? 'Sim' : 'Não'}</p>
-                            <p><span>Nome do Jogo :</span> {data.game.connected ? 'Sim' : 'Não'}</p>
                             <p><span>Tempo de Jogo:</span> {formatDate(data.game.time)}</p>
                             <p><span>Tempo Ajustado:</span> {adjustGameTime(data.game.time, data.game.timeScale)}</p>
                             <p><span>Jogo Pausado:</span> {data.game.paused ? 'Sim' : 'Não'}</p>
@@ -171,13 +169,6 @@ const Championships = () => {
                                 {expandedIndex === index ? 'Ocultar Dados do Caminhão' : 'Mostrar Dados do Caminhão'}
                             </button>
 
-                            <button
-                                className="toggle-button"
-                                onClick={() => toggleTrailerInfo(index)}
-                            >
-                                {showTrailerData === index ? 'Ocultar Dados do Reboque' : 'Mostrar Dados do Reboque'}
-                            </button>
-
                             {expandedIndex === index && (
                                 <div className="truck-data">
                                     <h3>Dados do Caminhão</h3>
@@ -198,13 +189,21 @@ const Championships = () => {
                                 </div>
                             )}
 
+                            <button
+                                className="toggle-button"
+                                onClick={() => toggleTrailerInfo(index)}
+                            >
+                                {showTrailerData === index ? 'Ocultar Dados do Reboque' : 'Mostrar Dados do Reboque'}
+                            </button>
+
                             {showTrailerData === index && (
                                 <div className="trailer-data">
                                     <h3>Dados do Reboque</h3>
                                     <p><span>ID do Reboque:</span> {data.trailer.id}</p>
-                                    <p><span>Carga do Reboque:</span> {data.trailer.name}</p>
-                                    <p><span>Peso do Reboque:</span> {data.trailer.mass}</p>
-                                    <p><span>Saúde do Reboque:</span> {data.trailer.wear}</p>
+                                    <p><span>Marca do Reboque:</span> {data.trailer.make}</p>
+                                    <p><span>Modelo do Reboque:</span> {data.trailer.model}</p>
+                                    <p><span>Capacidade do Reboque:</span> {data.trailer.capacity}</p>
+                                    <p><span>Carga Atual:</span> {data.trailer.currentLoad}</p>
                                 </div>
                             )}
                         </div>
