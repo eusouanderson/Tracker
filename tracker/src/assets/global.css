@@ -1,15 +1,24 @@
 /* Definindo variáveis de tema */
 :root {
     --background-color: #121212;
-    --text-color: #ffffff;
-    --primary-color: #1f1f1f;
-    --secondary-color: #2c2c2c;
-    --input-background-color: #2c2c2c;
+    --text-color: #e0e0e0;
+    /* Cor do texto mais clara */
+    --primary-color: #1e1e1e;
+    /* Cor de fundo do cabeçalho/rodapé */
+    --secondary-color: #2a2a2a;
+    /* Cor de fundo dos cartões e containers */
+    --input-background-color: #333333;
+    /* Fundo dos inputs */
     --input-text-color: #ffffff;
-    --button-background-color: #3d3d3d;
+    /* Texto dos inputs */
+    --button-background-color: #4a4a4a;
+    /* Fundo dos botões */
     --button-text-color: #ffffff;
-    --border-color: #444444;
-    --highlight-color: #ff5722;
+    /* Texto dos botões */
+    --border-color: #555555;
+    /* Cor das bordas */
+    --highlight-color: #ff99009a;
+    /* Cor de destaque laranja */
     /* Cor de destaque para elementos importantes */
 }
 
@@ -19,19 +28,21 @@ body {
     padding: 0;
     background-color: var(--background-color);
     color: var(--text-color);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+    /* Fontes mais legíveis */
 }
 
 /* Elementos gerais */
 a {
-    color: var(--text-color);
+    color: var(--highlight-color);
+    /* Cor de destaque para links */
     text-decoration: none;
 }
 
 a:hover {
     text-decoration: underline;
-    color: var(--highlight-color);
-    /* Adiciona cor de destaque ao passar o mouse */
+    color: var(--text-color);
+    /* Cor do link ao passar o mouse */
 }
 
 /* Inputs e Botões */
@@ -40,17 +51,20 @@ button {
     background-color: var(--input-background-color);
     color: var(--input-text-color);
     border: 1px solid var(--border-color);
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    /* Transição suave para cor de fundo */
+    padding: 12px;
+    margin: 8px;
+    border-radius: 8px;
+    /* Borda mais arredondada */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    /* Transição suave para cor de fundo e borda */
 }
 
 button {
     background-color: var(--button-background-color);
     color: var(--button-text-color);
     cursor: pointer;
+    font-weight: bold;
+    /* Texto mais forte para botões */
 }
 
 button:hover {
@@ -65,7 +79,7 @@ footer {
     padding: 20px;
     text-align: center;
     border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     /* Adiciona sombra para profundidade */
 }
 
@@ -95,14 +109,14 @@ footer a:hover {
     padding: 20px;
     margin: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     /* Adiciona sombra para profundidade */
     transition: box-shadow 0.3s ease;
     /* Transição suave para sombra */
 }
 
 .card:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     /* Destaque ao passar o mouse */
 }
 
@@ -111,7 +125,7 @@ footer a:hover {
     padding: 20px;
     background-color: var(--secondary-color);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     /* Adiciona sombra para profundidade */
 }
 
@@ -143,10 +157,12 @@ footer a:hover {
 
 .championship-item h1 {
     margin-top: 0;
+    color: var(--text-color);
 }
 
 .championship-item p {
     margin: 5px 0;
+    color: var(--text-color);
 }
 
 /* Estilo para o botão de toggle */
@@ -154,8 +170,8 @@ footer a:hover {
     background-color: var(--button-background-color);
     color: var(--button-text-color);
     border: none;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 12px;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
@@ -172,8 +188,8 @@ footer a:hover {
 .truck-data,
 .trailer-data {
     background-color: var(--secondary-color);
-    padding: 10px;
-    border-radius: 5px;
+    padding: 12px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
     margin-top: 10px;
 }
@@ -185,7 +201,8 @@ footer a:hover {
 }
 
 .error {
-    color: red;
+    color: #ff4d4d;
+    /* Vermelho mais visível para erros */
 }
 
 /* Estilo para a Home Page */
@@ -193,7 +210,7 @@ footer a:hover {
     padding: 20px;
     background-color: var(--secondary-color);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     /* Adiciona sombra para profundidade */
 }
 
@@ -221,6 +238,7 @@ footer a:hover {
 }
 
 .score {
-    color: red;
+    color: #ff5722;
+    /* Cor mais visível para a pontuação */
     font-weight: bold;
 }

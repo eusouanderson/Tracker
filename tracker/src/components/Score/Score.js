@@ -6,9 +6,8 @@ const calculateScore = (data) => {
 
     if (data && data.game && data.game.connected !== undefined) {
         // Adiciona 1 ponto por segundo de conexão
-        const gameTime = new Date(data.game.time);
         const currentTime = new Date();
-        const timeDiffInSeconds = (currentTime - gameTime) / 1000;
+        const timeDiffInSeconds = 0
         score += timeDiffInSeconds; // 1 ponto por segundo
 
         // Verifica prazo de entrega

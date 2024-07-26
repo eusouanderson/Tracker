@@ -53,7 +53,7 @@ const updateTelemetryData = async (name, password, connected) => {
         }
 
         telemetryData.gamer.user = name;
-        telemetryData.gamer.password = password;  // Adicionando a senha
+        telemetryData.gamer.password = password; 
         telemetryData.game.connected = connected;
 
         let telemetry = await Telemetry.findOne({ 'gamer.user': name });
