@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import axios from 'axios';
 import Header from '../../components/Header/Header.js';
 import Footer from '../../components/Footer/Footer.js';
+import Score from '../../components/Score/Score.js'; // Importa o componente Score
 import '../../assets/global.css';
 
 const Championships = () => {
@@ -34,72 +35,55 @@ const Championships = () => {
 
         fetchTelemetryData();
 
-        socket.on('telemetryUpdate', (data) => {
-            setTelemetryData(data);
-        });
+        const handleTelemetryUpdate = (data) => {
+            if (!data || !data.gamer) {
+                console.warn('Dados de telemetria inválidos:', data);
+                return;
+            }
+
+            setTelemetryData(prevData => {
+                const existingDataIndex = prevData.findIndex(d => d.gamer?.user === data.gamer?.user);
+                if (existingDataIndex !== -1) {
+                    const newData = [...prevData];
+                    newData[existingDataIndex] = data;
+                    return newData;
+                } else {
+                    return [...prevData, data];
+                }
+            });
+        };
+
+        socket.on('telemetryUpdate', handleTelemetryUpdate);
 
         return () => {
             socket.disconnect();
         };
-    }, [API_BASE_URL]); 
+    }, [API_BASE_URL]);
 
-    const calculateScore = (data) => {
-        let score = 0;
-
-        if (data.game.connected && data.game.gameName !== "null") {
-            const gameTime = new Date(data.game.time);
-            const currentTime = new Date();
-            const timeDiff = (currentTime - gameTime) / (1000 * 60 * 60);
-            score += timeDiff * 100000;
-
-            const deadlineTime = new Date(data.job.deadlineTime);
-            if (currentTime <= deadlineTime) {
-                score += 200; // Ajustado para 200
-            }
-
-            // Penalidades
-            if (data.truck.fuel < (data.truck.fuelCapacity * 0.10)) {
-                score -= 2000; // Mantido alto
-            }
-
-            const damagePercentage = (
-                data.truck.wearEngine +
-                data.truck.wearTransmission +
-                data.truck.wearCabin +
-                data.truck.wearChassis +
-                data.truck.wearWheels
-            ) / 5;
-            score -= damagePercentage * 1000 * 0.2; // Mantido alto
-
-            // Bônus
-            if (data.truck.speed <= data.navigation.speedLimit) {
-                score += data.truck.speed * 100;
-            }
-
-            if (data.truck.fuelAverageConsumption < 10) {
-                score += 100; // Ajustado para 100
-            }
-        }
-
-        return score;
+    const isValidDate = (dateString) => {
+        const date = new Date(dateString);
+        return !isNaN(date.getTime());
     };
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('pt-BR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-        });
+        return isValidDate(dateString)
+            ? new Date(dateString).toLocaleString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+            })
+            : 'Data inválida';
     };
 
     const adjustGameTime = (gameTime, timeScale) => {
+        if (!isValidDate(gameTime)) return 'Data inválida';
+
         const time = new Date(gameTime);
         const realTimeMs = timeScale * 1000;
-        const adjustedTime = new Date(time.getTime() * realTimeMs);
+        const adjustedTime = new Date(time.getTime() + realTimeMs);
         return adjustedTime.toLocaleString('pt-BR', {
             year: 'numeric',
             month: '2-digit',
@@ -110,9 +94,19 @@ const Championships = () => {
         });
     };
 
+    const formatPlacement = (placement) => {
+        if (placement && typeof placement === 'object') {
+            return `X: ${placement.x}, Y: ${placement.y}, Z: ${placement.z}, Heading: ${placement.heading}, Pitch: ${placement.pitch}, Roll: ${placement.roll}`;
+        }
+        return 'Dados inválidos';
+    };
+
+    // Remova a lógica de ordenação que usa `calculateScore`
     const sortedTelemetryData = telemetryData
-        .map(data => ({ ...data, score: calculateScore(data) })) // Adiciona a pontuação a cada entrada de dados
-        .sort((a, b) => b.score - a.score); // Ordena pela pontuação em ordem decrescente
+        .sort((a, b) => {
+            // Substitua a lógica de ordenação se necessário
+            return 0; // Pode ajustar para a sua lógica de ordenação
+        });
 
     const toggleTruckInfo = (index) => {
         setExpandedIndex(expandedIndex === index ? null : index);
@@ -136,14 +130,16 @@ const Championships = () => {
                 <div className="championships-list">
                     {sortedTelemetryData.map((data, index) => (
                         <div key={index} className="championship-item">
-                            <h1>{index + 1}° Posição - Motorista: {data.game.gameName}</h1>
-                            <p><span>Jogador Conectado:</span> {data.game.connected ? 'Sim' : 'Não'}</p>
-                            <p><span>Tempo de Jogo:</span> {formatDate(data.game.time)}</p>
-                            <p><span>Tempo Ajustado:</span> {adjustGameTime(data.game.time, data.game.timeScale)}</p>
-                            <p><span>Jogo Pausado:</span> {data.game.paused ? 'Sim' : 'Não'}</p>
-                            <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game.nextRestStopTime)}</p>
-                            <p><span>Versão do Plugin de Telemetria:</span> {data.game.telemetryPluginVersion}</p>
-                            <p className='score'><span>Pontuação:</span> {data.score.toFixed(2)}</p>
+                            <h1>{index + 1}° Posição - Motorista: {data.gamer?.user || 'Desconhecido'}</h1>
+                            <p><span>Jogador Conectado:</span> {data.game?.connected ? 'Sim' : 'Não'}</p>
+                            <p><span>Tempo de Jogo:</span> {formatDate(data.game?.time)}</p>
+                            <p><span>Tempo Ajustado:</span> {adjustGameTime(data.game?.time, data.game?.timeScale)}</p>
+                            <p><span>Jogo Pausado:</span> {data.game?.paused ? 'Sim' : 'Não'}</p>
+                            <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game?.nextRestStopTime)}</p>
+                            <p><span>Versão do Plugin de Telemetria:</span> {data.game?.telemetryPluginVersion}</p>
+
+                            {/* Usa o componente Score */}
+                            <Score data={data} />
 
                             <button
                                 className="toggle-button"
@@ -154,11 +150,12 @@ const Championships = () => {
 
                             {expandedJobIndex === index && (
                                 <div className="job-data">
-                                    <h2>Dados do Trabalho</h2>
-                                    <p><span>Dados de Trabalho:</span> {data.job.income}</p>
-                                    <p><span>Tempo de Trabalho:</span> {formatDate(data.job.deadlineTime)}</p>
-                                    <p><span>Cidade Destino : </span><span>{data.job.destinationCity}</span></p>
-                                    <p><span>Empresa Destino : </span><span>{data.job.destinationCompany}</span></p>
+                                    <h3>Dados do Trabalho</h3>
+                                    <p><span>Empresa:</span> {data.job?.company}</p>
+                                    <p><span>Local de Entrega:</span> {data.job?.deliveryPlace}</p>
+                                    <p><span>Prazo:</span> {formatDate(data.job?.deadlineTime)}</p>
+                                    <p><span>Entrega Feita:</span> {data.job?.deliveryCompleted ? 'Sim' : 'Não'}</p>
+                                    <p><span>Localização de Entrega:</span> {formatPlacement(data.job?.deliveryLocation)}</p>
                                 </div>
                             )}
 
@@ -172,20 +169,17 @@ const Championships = () => {
                             {expandedIndex === index && (
                                 <div className="truck-data">
                                     <h3>Dados do Caminhão</h3>
-                                    <p><span>ID do Caminhão:</span> {data.truck.id}</p>
-                                    <p><span>Marca do Caminhão:</span> {data.truck.make}</p>
-                                    <p><span>Velocidade do Caminhão:</span> {data.truck.speed}</p>
-                                    <p><span>Controle de Cruzeiro:</span> {data.truck.cruiseControlSpeed} <span>(km/h)</span></p>
-                                    <p><span>Controle de Cruzeiro Ativado:</span> {data.truck.cruiseControlOn ? 'Sim' : 'Não'} </p>
-                                    <p><span>Quilometragem do Caminhão:</span> {data.truck.odometer}</p>
-                                    <p><span>Marcha do Caminhão:</span> {data.truck.gear} <span>(N°)</span></p>
-                                    <p><span>Modelo do Caminhão:</span> {data.truck.model}</p>
-                                    <p><span>Saúde do Caminhão:</span> {data.truck.health}</p>
-                                    <p><span>Combustível do Caminhão:</span> {data.truck.fuel}</p>
-                                    <p><span>Capacidade de Combustível do Caminhão:</span> {data.truck.fuelCapacity}</p>
-                                    <p><span>Reboque Conectado:</span> {data.trailer.attached ? 'Sim' : 'Não'}</p>
-                                    <p><span>Cidade de Origem:</span> {data.job.sourceCity}</p>
-                                    <p><span>Distância Estimada:</span> {data.navigation.estimatedDistance}</p>
+                                    <p><span>Marca:</span> {data.truck?.brand}</p>
+                                    <p><span>Modelo:</span> {data.truck?.model}</p>
+                                    <p><span>Consumo de Combustível:</span> {data.truck?.fuelAverageConsumption} L/100km</p>
+                                    <p><span>Combustível:</span> {data.truck?.fuel} L</p>
+                                    <p><span>Capacidade do Combustível:</span> {data.truck?.fuelCapacity} L</p>
+                                    <p><span>Velocidade:</span> {data.truck?.speed} km/h</p>
+                                    <p><span>Desgaste do Motor:</span> {data.truck?.wearEngine}%</p>
+                                    <p><span>Desgaste da Transmissão:</span> {data.truck?.wearTransmission}%</p>
+                                    <p><span>Desgaste da Cabine:</span> {data.truck?.wearCabin}%</p>
+                                    <p><span>Desgaste do Chassi:</span> {data.truck?.wearChassis}%</p>
+                                    <p><span>Desgaste das Rodas:</span> {data.truck?.wearWheels}%</p>
                                 </div>
                             )}
 
@@ -196,21 +190,22 @@ const Championships = () => {
                                 {showTrailerData === index ? 'Ocultar Dados do Reboque' : 'Mostrar Dados do Reboque'}
                             </button>
 
-                            {showTrailerData === index && (
+                            {showTrailerData === index && data.trailer && (
                                 <div className="trailer-data">
                                     <h3>Dados do Reboque</h3>
-                                    <p><span>ID do Reboque:</span> {data.trailer.id}</p>
-                                    <p><span>Marca do Reboque:</span> {data.trailer.make}</p>
-                                    <p><span>Modelo do Reboque:</span> {data.trailer.model}</p>
-                                    <p><span>Capacidade do Reboque:</span> {data.trailer.capacity}</p>
-                                    <p><span>Carga Atual:</span> {data.trailer.currentLoad}</p>
+                                    <p><span>Marca:</span> {data.trailer.brand}</p>
+                                    <p><span>Modelo:</span> {data.trailer.model}</p>
+                                    <p><span>Comprimento:</span> {data.trailer.length} m</p>
+                                    <p><span>Capacidade de Carga:</span> {data.trailer.loadCapacity} kg</p>
+                                    <p><span>Carga:</span> {data.trailer.load} kg</p>
+                                    <p><span>Localização do Reboque:</span> {formatPlacement(data.trailer.placement)}</p>
                                 </div>
                             )}
                         </div>
                     ))}
                 </div>
             ) : (
-                <p>Nenhum dado disponível.</p>
+                <p className="no-data">Nenhum dado disponível.</p>
             )}
             <Footer />
         </div>

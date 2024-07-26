@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-//import './TelemetryData.css';
+// import './TelemetryData.css';
 import '../../assets/global.css';
 
 const TelemetryData = () => {
     const [name, setName] = useState('');
+    const [password, setPassword] = useState('');
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [formSubmitted, setFormSubmitted] = useState(false);
     const API_BASE_URL = `${window.location.protocol}//${window.location.host}`;
+
     useEffect(() => {
         const savedName = localStorage.getItem('savedName');
         if (savedName) {
@@ -25,7 +27,12 @@ const TelemetryData = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`${API_BASE_URL}/dados-telemetry?name=${name}`);
+            const response = await axios.get(`${API_BASE_URL}/dados-telemetry`, {
+                params: {
+                    name: name,
+                    password: password
+                }
+            });
             setData(response.data);
             setLoading(false);
             setFormSubmitted(true);
@@ -51,6 +58,14 @@ const TelemetryData = () => {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Digite seu nome"
+                        required
+                        className="telemetry-input"
+                    />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Digite sua senha"
                         required
                         className="telemetry-input"
                     />

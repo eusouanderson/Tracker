@@ -8,6 +8,7 @@
     "url": "https://github.com/eusouanderson",
     "email": "eusouanderson@outlook.com"
   },
+  
   "description": "Um aplicativo para jogadores de Euro Truck Simulator 2 (ETS2) onde eles competem para ver quem dirige melhor.",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",

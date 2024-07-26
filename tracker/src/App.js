@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import HomePage from './pages/Home/HomePage.js';
-import Championships from './pages/Championship/Championship.js'; // Certifique-se de criar este componente
+import Championships from './pages/Championship/Championship.js';
 
 function App() {
   return (

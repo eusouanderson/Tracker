@@ -12,7 +12,6 @@ const { Server } = require('socket.io');
 const dotenv = require('dotenv');
 const envoriments = require('./envoriments/envoriments');
 
-// Carregar variáveis de ambiente
 dotenv.config();
 
 const app = express();
@@ -26,8 +25,7 @@ const io = new Server(server, {
 app.use(cors());
 app.use(bodyParser.json());
 
-// Configurar a URI do MongoDB usando variáveis de ambiente
-const MONGO_URI = `mongodb+srv://${envoriments.MONGO_USER}:${envoriments.MONGO_PASSWORD}@${envoriments.MONGO_CLUSTER}/farmSimulator?retryWrites=true&w=majority`;
+const MONGO_URI = `mongodb+srv://${envoriments.MONGO_USER}:${envoriments.MONGO_PASSWORD}@${envoriments.MONGO_CLUSTER}/EuroTruckSim2020?retryWrites=true&w=majority`;
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log('Conectado ao MongoDB'))
@@ -42,18 +40,27 @@ const emitTelemetryUpdates = async () => {
     }
 };
 
-const updateTelemetryData = async (name, connected) => {
+const updateTelemetryData = async (name, password, connected) => {
     try {
         const response = await axios.get(envoriments.API_SERVER);
         const telemetryData = response.data;
-        telemetryData.game.gameName = name;
+
+        if (!telemetryData.gamer) {
+            telemetryData.gamer = {};
+        }
+        if (!telemetryData.game) {
+            telemetryData.game = {};
+        }
+
+        telemetryData.gamer.user = name;
+        telemetryData.gamer.password = password;  // Adicionando a senha
         telemetryData.game.connected = connected;
 
-        let telemetry = await Telemetry.findOne({ 'game.gameName': name });
+        let telemetry = await Telemetry.findOne({ 'gamer.user': name });
 
         if (telemetry) {
             telemetry = await Telemetry.findOneAndUpdate(
-                { 'game.gameName': name },
+                { 'gamer.user': name },
                 telemetryData,
                 { new: true }
             );
@@ -69,32 +76,36 @@ const updateTelemetryData = async (name, connected) => {
     }
 };
 
-// Servir arquivos estáticos da build
-const isDev = process.env.NODE_ENV === 'production';
-const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
 
-app.use(express.static(buildPath));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-});
 
 app.get('/dados-telemetry', async (req, res) => {
     try {
-        const { name } = req.query;
-        if (!name) {
-            return res.status(400).json({ error: 'Nome é necessário' });
+        const { name, password } = req.query;
+
+        if (!name || !password) {
+            return res.status(400).json({ error: 'Nome e senha são necessários' });
         }
 
-        const intervalId = setInterval(() => updateTelemetryData(name, true), 1000);
+        let telemetry = await Telemetry.findOne({ 'gamer.user': name });
+
+        if (!telemetry) {
+            telemetry = await Telemetry.create({
+                gamer: { user: name, password: password }
+            });
+            console.log("Novo jogador criado com sucesso:", telemetry);
+        } else if (telemetry.gamer.password !== password) {
+            return res.status(401).json({ error: 'Senha inválida' });
+        }
+
+        const intervalId = setInterval(() => updateTelemetryData(name, password, true), 1000);
 
         io.on('connection', (socket) => {
             console.log('Cliente conectado:', name);
-            updateTelemetryData(name, true);
+            updateTelemetryData(name, password, true);
 
             socket.on('disconnect', () => {
                 console.log('Cliente desconectado:', name);
-                updateTelemetryData(name, false);
+                updateTelemetryData(name, password, false);
                 clearInterval(intervalId);
             });
         });
@@ -104,6 +115,26 @@ app.get('/dados-telemetry', async (req, res) => {
         console.error("Erro ao processar solicitação:", error);
         res.status(500).json({ error: 'Erro ao processar solicitação' });
     }
+});
+
+
+const isDev = process.env.NODE_ENV !== 'production';
+const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
+
+app.use(express.static(buildPath));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+});
+
+
+app.get('/dados-telemetry/:score', (req, res) => {
+    const { score } = req.params;
+    if (!score) {
+        return res.status(400).json({ error: 'Score é necessário' });
+    }
+    io.emit('score', score); 
+    res.json({ message: 'Atualização de telemetria iniciada', score });
 });
 
 app.get('/todos-dados-telemetry', async (req, res) => {
@@ -124,7 +155,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Manipulador de término para encerrar o servidor corretamente
 const shutdown = (signal) => {
     console.log(`Recebido sinal de ${signal}. Fechando o servidor...`);
     server.close(() => {
@@ -141,6 +171,7 @@ server.listen(envoriments.PORT_SERVER, () => {
     console.log('Caminho da build do index:', buildPath);
 });
 
-// Capturar sinais de término (como Ctrl+C)
+
+
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
