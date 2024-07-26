@@ -22,7 +22,7 @@ const Championships = () => {
         const fetchTelemetryData = async () => {
             try {
                 const URL = `${API_BASE_URL}/todos-dados-telemetry`;
-                console.log('URL:', URL);
+                console.log('Fetching initial telemetry data from URL:', URL);
                 const response = await axios.get(URL);
                 setTelemetryData(response.data);
                 setLoading(false);
@@ -36,8 +36,9 @@ const Championships = () => {
         fetchTelemetryData();
 
         const handleTelemetryUpdate = (data) => {
+            console.log('Received telemetry update:', data); // Adiciona um log para verificar dados recebidos
             if (!data || !data.gamer) {
-                console.warn('Dados de telemetria inválidos:', data);
+                console.warn('Invalid telemetry data:', data);
                 return;
             }
 
@@ -54,9 +55,11 @@ const Championships = () => {
         };
 
         socket.on('telemetryUpdate', handleTelemetryUpdate);
+        console.log('Socket.IO connection established with API_BASE_URL:', API_BASE_URL);
 
         return () => {
             socket.disconnect();
+            console.log('Socket.IO connection disconnected');
         };
     }, [API_BASE_URL]);
 
@@ -101,7 +104,6 @@ const Championships = () => {
         return 'Dados inválidos';
     };
 
-    // Remova a lógica de ordenação que usa `calculateScore`
     const sortedTelemetryData = telemetryData
         .sort((a, b) => {
             // Substitua a lógica de ordenação se necessário
@@ -138,7 +140,6 @@ const Championships = () => {
                             <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game?.nextRestStopTime)}</p>
                             <p><span>Versão do Plugin de Telemetria:</span> {data.game?.telemetryPluginVersion}</p>
 
-                            {/* Usa o componente Score */}
                             <Score data={data} />
 
                             <button
@@ -175,11 +176,8 @@ const Championships = () => {
                                     <p><span>Combustível:</span> {data.truck?.fuel} L</p>
                                     <p><span>Capacidade do Combustível:</span> {data.truck?.fuelCapacity} L</p>
                                     <p><span>Velocidade:</span> {data.truck?.speed} km/h</p>
-                                    <p><span>Desgaste do Motor:</span> {data.truck?.wearEngine}%</p>
-                                    <p><span>Desgaste da Transmissão:</span> {data.truck?.wearTransmission}%</p>
-                                    <p><span>Desgaste da Cabine:</span> {data.truck?.wearCabin}%</p>
-                                    <p><span>Desgaste do Chassi:</span> {data.truck?.wearChassis}%</p>
-                                    <p><span>Desgaste das Rodas:</span> {data.truck?.wearWheels}%</p>
+                                    <p><span>Rotação do Motor:</span> {data.truck?.rpm}</p>
+                                    <p><span>Temperatura do Motor:</span> {data.truck?.engineTemperature} °C</p>
                                 </div>
                             )}
 
@@ -195,17 +193,15 @@ const Championships = () => {
                                     <h3>Dados do Reboque</h3>
                                     <p><span>Marca:</span> {data.trailer.brand}</p>
                                     <p><span>Modelo:</span> {data.trailer.model}</p>
-                                    <p><span>Comprimento:</span> {data.trailer.length} m</p>
-                                    <p><span>Capacidade de Carga:</span> {data.trailer.loadCapacity} kg</p>
-                                    <p><span>Carga:</span> {data.trailer.load} kg</p>
-                                    <p><span>Localização do Reboque:</span> {formatPlacement(data.trailer.placement)}</p>
+                                    <p><span>Capacidade:</span> {data.trailer.capacity} kg</p>
+                                    <p><span>Estado:</span> {data.trailer.condition}</p>
                                 </div>
                             )}
                         </div>
                     ))}
                 </div>
             ) : (
-                <p className="no-data">Nenhum dado disponível.</p>
+                !loading && <p className="no-data">Nenhum dado disponível.</p>
             )}
             <Footer />
         </div>

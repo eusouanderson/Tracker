@@ -53,7 +53,7 @@ const updateTelemetryData = async (name, password, connected) => {
         }
 
         telemetryData.gamer.user = name;
-        telemetryData.gamer.password = password; 
+        telemetryData.gamer.password = password;
         telemetryData.game.connected = connected;
 
         let telemetry = await Telemetry.findOne({ 'gamer.user': name });
@@ -75,8 +75,6 @@ const updateTelemetryData = async (name, password, connected) => {
         console.error("Erro ao obter ou salvar dados de telemetria:", error);
     }
 };
-
-
 
 app.get('/dados-telemetry', async (req, res) => {
     try {
@@ -117,7 +115,6 @@ app.get('/dados-telemetry', async (req, res) => {
     }
 });
 
-
 const isDev = process.env.NODE_ENV !== 'production';
 const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
 
@@ -127,13 +124,12 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
 });
 
-
 app.get('/dados-telemetry/:score', (req, res) => {
     const { score } = req.params;
     if (!score) {
         return res.status(400).json({ error: 'Score é necessário' });
     }
-    io.emit('score', score); 
+    io.emit('score', score);
     res.json({ message: 'Atualização de telemetria iniciada', score });
 });
 
@@ -170,8 +166,6 @@ server.listen(envoriments.PORT_SERVER, () => {
     console.log(`Server running on http://localhost:${envoriments.PORT_SERVER}`);
     console.log('Caminho da build do index:', buildPath);
 });
-
-
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
