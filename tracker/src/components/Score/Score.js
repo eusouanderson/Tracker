@@ -1,24 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './Score.css';
 
 const calculateScore = (data) => {
     let score = 0;
 
-    if (data && data.game && data.game.connected !== undefined) {
-        // Adiciona 1 ponto por segundo de conexão
+    if (data.game.connected !== undefined) {
+        
         const currentTime = new Date();
-        const timeDiffInSeconds = 0
-        score += timeDiffInSeconds; // 1 ponto por segundo
+        const timeDiffInSeconds = 0;
+        score += timeDiffInSeconds; 
 
-        // Verifica prazo de entrega
+        
         const deadlineTime = new Date(data.job.deadlineTime);
         if (currentTime <= deadlineTime) {
-            score += 200; // Bônus por estar dentro do prazo
+            score += 200;
         }
 
-        // Penalidades
+        
         if (data.truck.fuel < (data.truck.fuelCapacity * 0.10)) {
-            score -= 2000; // Penalidade por baixo nível de combustível
+            score -= 2000;
         }
 
         const damagePercentage = (
@@ -28,23 +29,46 @@ const calculateScore = (data) => {
             data.truck.wearChassis +
             data.truck.wearWheels
         ) / 5;
-        score -= damagePercentage * 1000 * 0.2; // Penalidade por desgaste do caminhão
+        score -= damagePercentage * 1000 * 0.2;
 
-        // Bônus
+        
         if (data.truck.speed <= data.navigation.speedLimit) {
-            score += data.truck.speed * 100; // Bônus por respeitar o limite de velocidade
+            score += data.truck.speed * 100;
         }
 
         if (data.truck.fuelAverageConsumption < 10) {
-            score += 100; // Bônus por bom consumo de combustível
+            score += 100; 
         }
     }
 
     return score;
 };
 
-const Score = ({ data }) => {
-    const score = calculateScore(data);
+const Score = ({ data, name }) => {
+    const [score, setScore] = useState(calculateScore(data));
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const newScore = calculateScore(data);
+            setScore(newScore);
+            // Envia a pontuação atualizada para o backend
+            axios.get('http://localhost:25555/dados-telemetry', {
+                params: {
+                    name,
+                    score: newScore
+                }
+            })
+                .then(response => {
+                    console.log("Pontuação enviada com sucesso:", response.data);
+                })
+                .catch(error => {
+                    console.error("Erro ao enviar pontuação:", error);
+                });
+        }, 1000);
+
+        return () => clearInterval(intervalId); // Limpa o intervalo ao desmontar o componente
+    }, [data, name]);
+
     return (
         <p className='score'><span>Pontuação:</span> {score?.toFixed(2) || 'N/A'}</p>
     );

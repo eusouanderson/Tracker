@@ -2,24 +2,22 @@
 :root {
     --background-color: #121212;
     --text-color: #e0e0e0;
-    /* Cor do texto mais clara */
     --primary-color: #1e1e1e;
-    /* Cor de fundo do cabeçalho/rodapé */
     --secondary-color: #2a2a2a;
-    /* Cor de fundo dos cartões e containers */
     --input-background-color: #333333;
-    /* Fundo dos inputs */
     --input-text-color: #ffffff;
-    /* Texto dos inputs */
     --button-background-color: #4a4a4a;
-    /* Fundo dos botões */
     --button-text-color: #ffffff;
-    /* Texto dos botões */
     --border-color: #555555;
-    /* Cor das bordas */
-    --highlight-color: #ff99009a;
-    /* Cor de destaque laranja */
-    /* Cor de destaque para elementos importantes */
+    --highlight-color: #AD38D9;
+
+    /* Novas cores */
+    --color1: #AD38D9;
+    --color2: #D93868;
+    --color3: #D938C9;
+    --color4: #7938D9;
+    --color5: #D94638;
+    --color6: #D981D0;
 }
 
 /* Estilo global */
@@ -29,20 +27,70 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: 'Roboto', Arial, Helvetica, sans-serif;
-    /* Fontes mais legíveis */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Elementos gerais */
+/* Headers e Footers */
+header,
+footer {
+    background-color: var(--primary-color);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+footer {
+    border-top: 1px solid var(--border-color);
+}
+
+/* Home Page */
+.home-page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Ocupa todo o espaço restante do corpo */
+}
+
+.home-main {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    margin: 20px;
+}
+
+.home-main h2 {
+    color: var(--text-color);
+    margin-top: 0;
+    font-size: 2em;
+    /* Aumenta o tamanho do título */
+}
+
+.home-main p {
+    color: var(--text-color);
+    margin: 10px 0;
+    font-size: 1.2em;
+    /* Aumenta o tamanho do texto dos parágrafos */
+}
+
+.home-main>* {
+    margin-bottom: 20px;
+}
+
+/* Outros estilos */
 a {
     color: var(--highlight-color);
-    /* Cor de destaque para links */
     text-decoration: none;
 }
 
 a:hover {
     text-decoration: underline;
     color: var(--text-color);
-    /* Cor do link ao passar o mouse */
 }
 
 /* Inputs e Botões */
@@ -54,9 +102,7 @@ button {
     padding: 12px;
     margin: 8px;
     border-radius: 8px;
-    /* Borda mais arredondada */
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    /* Transição suave para cor de fundo e borda */
 }
 
 button {
@@ -64,43 +110,10 @@ button {
     color: var(--button-text-color);
     cursor: pointer;
     font-weight: bold;
-    /* Texto mais forte para botões */
 }
 
 button:hover {
-    background-color: var(--highlight-color);
-    /* Adiciona destaque ao botão */
-}
-
-/* Headers e Footers */
-header,
-footer {
-    background-color: var(--primary-color);
-    padding: 20px;
-    text-align: center;
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    /* Adiciona sombra para profundidade */
-}
-
-header {
-    border-bottom: none;
-    /* Remove a borda inferior do cabeçalho para não duplicar com a borda do rodapé */
-}
-
-footer {
-    border-top: 1px solid var(--border-color);
-}
-
-footer a {
-    color: var(--button-text-color);
-    text-decoration: none;
-}
-
-footer a:hover {
-    text-decoration: underline;
-    color: var(--highlight-color);
-    /* Adiciona cor de destaque ao passar o mouse */
+    background-color: var(--color1);
 }
 
 /* Cards */
@@ -110,14 +123,11 @@ footer a:hover {
     margin: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    /* Adiciona sombra para profundidade */
     transition: box-shadow 0.3s ease;
-    /* Transição suave para sombra */
 }
 
 .card:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-    /* Destaque ao passar o mouse */
 }
 
 /* Estilo para o Championships Container */
@@ -126,7 +136,6 @@ footer a:hover {
     background-color: var(--secondary-color);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    /* Adiciona sombra para profundidade */
 }
 
 .championships-container h2 {
@@ -145,14 +154,11 @@ footer a:hover {
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
     transition: background-color 0.3s ease, border-color 0.3s ease;
-    /* Transição suave para fundo e borda */
 }
 
 .championship-item:hover {
-    background-color: var(--highlight-color);
-    /* Destaque ao passar o mouse */
-    border-color: var(--highlight-color);
-    /* Destaque na borda */
+    background-color: var(--color2);
+    border-color: var(--color2);
 }
 
 .championship-item h1 {
@@ -175,12 +181,10 @@ footer a:hover {
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.3s ease;
-    /* Transição suave para cor de fundo */
 }
 
 .toggle-button:hover {
-    background-color: var(--highlight-color);
-    /* Adiciona destaque ao passar o mouse */
+    background-color: var(--color3);
 }
 
 /* Estilo para os dados do caminhão e do reboque */
@@ -201,44 +205,5 @@ footer a:hover {
 }
 
 .error {
-    color: #ff4d4d;
-    /* Vermelho mais visível para erros */
-}
-
-/* Estilo para a Home Page */
-.home-page {
-    padding: 20px;
-    background-color: var(--secondary-color);
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    /* Adiciona sombra para profundidade */
-}
-
-/* Estilo para o main da Home Page */
-.home-main {
-    padding: 20px;
-}
-
-.home-main h2 {
-    color: var(--text-color);
-    margin-top: 0;
-}
-
-.home-main p {
-    color: var(--text-color);
-    margin: 10px 0;
-}
-
-.telemetry-data {
-    background-color: var(--primary-color);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    margin-top: 20px;
-}
-
-.score {
-    color: #ff5722;
-    /* Cor mais visível para a pontuação */
-    font-weight: bold;
+    color: #D93868;
 }

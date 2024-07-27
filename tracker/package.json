@@ -36,6 +36,7 @@
     "build": "react-scripts build && electron-builder build",
     "compile:backend": "ncc build backend/mongo.js -o backend && cp -r build backend/build",
     "package:backend": "pkg backend/index.js --targets node16-win-x64 --output backend/server.exe",
+    "package:backend:noterminal": "pkg backend/index.js --targets node16-win-x64 --output backend/server.exe --options {\"windows\": {\"hide\": true}}",
     "test": "react-scripts test",
     "test:electron": "electron --trace-warnings ."
   },

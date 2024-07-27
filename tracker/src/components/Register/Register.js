@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// import './TelemetryData.css';
 import '../../assets/global.css';
 
-const TelemetryData = () => {
+const Register = () => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [data, setData] = useState(null);
@@ -50,7 +49,7 @@ const TelemetryData = () => {
 
     return (
         <div className="telemetry-container">
-            <h2>Telemetry Data</h2>
+            <h2>Registro</h2>
             {!formSubmitted && (
                 <form onSubmit={handleSubmit} className="telemetry-form">
                     <input
@@ -86,4 +85,4 @@ const TelemetryData = () => {
     );
 };
 
-export default TelemetryData;
+export default Register;

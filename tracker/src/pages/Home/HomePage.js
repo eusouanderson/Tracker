@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../../components/Header/Header.js';
 import Footer from '../../components/Footer/Footer.js';
-import TelemetryData from '../../components/TelemetryData/TelemetryData.js';
+import Register from '../../components/Register/Register.js';
 import './HomePage.css'
 import '../../assets/global.css';
 
@@ -21,9 +21,9 @@ const HomePage = () => {
                     Em seguida, cadastre seu nome uma única vez. Esse nome será usado para associar e salvar todos os seus dados de telemetria. É importante que o nome seja claro e único.
                 </p>
                 <p>
-                    Após o cadastro, você poderá visualizar todos os dados de telemetria diretamente aqui, atualizados em tempo real.
+                    Após o cadastro, Acesse a página de Campeonato, inicie o jogo e boa sorte.
                 </p>
-                <TelemetryData />
+                <Register />
             </main>
             <Footer />
         </div>

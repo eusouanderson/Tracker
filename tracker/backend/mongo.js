@@ -1,4 +1,4 @@
-process.title = 'MongoDB';
+process.title = 'Tracker Backend';
 
 const express = require('express');
 const path = require('path');
@@ -40,7 +40,7 @@ const emitTelemetryUpdates = async () => {
     }
 };
 
-const updateTelemetryData = async (name, password, connected) => {
+const updateTelemetryData = async (name, password, connected, score = null) => {
     try {
         const response = await axios.get(envoriments.API_SERVER);
         const telemetryData = response.data;
@@ -54,7 +54,12 @@ const updateTelemetryData = async (name, password, connected) => {
 
         telemetryData.gamer.user = name;
         telemetryData.gamer.password = password;
-        telemetryData.game.connected = connected;
+        telemetryData.gamer.connected = connected;
+
+        // Adicione o score aos dados de telemetria
+        if (score !== null) {
+            telemetryData.score.score = score;
+        }
 
         let telemetry = await Telemetry.findOne({ 'gamer.user': name });
 
@@ -64,10 +69,10 @@ const updateTelemetryData = async (name, password, connected) => {
                 telemetryData,
                 { new: true }
             );
-            console.log("Dados de telemetria atualizados com sucesso:", telemetry);
+            //console.log("Dados de telemetria atualizados com sucesso:", telemetry);
         } else {
             telemetry = await Telemetry.create(telemetryData);
-            console.log("Novos dados de telemetria salvos com sucesso:", telemetry);
+            //console.log("Novos dados de telemetria salvos com sucesso:", telemetry);
         }
 
         emitTelemetryUpdates();
@@ -76,9 +81,14 @@ const updateTelemetryData = async (name, password, connected) => {
     }
 };
 
+const isDev = process.env.NODE_ENV !== 'production';
+const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
+
+app.use(express.static(buildPath));
+
 app.get('/dados-telemetry', async (req, res) => {
     try {
-        const { name, password } = req.query;
+        const { name, password, score } = req.query;
 
         if (!name || !password) {
             return res.status(400).json({ error: 'Nome e senha são necessários' });
@@ -93,6 +103,17 @@ app.get('/dados-telemetry', async (req, res) => {
             console.log("Novo jogador criado com sucesso:", telemetry);
         } else if (telemetry.gamer.password !== password) {
             return res.status(401).json({ error: 'Senha inválida' });
+        }
+
+        // Atualiza o score se fornecido
+        if (score !== undefined) {
+            telemetry.score = parseFloat(score);
+            telemetry = await Telemetry.findOneAndUpdate(
+                { 'gamer.user': name },
+                telemetry,
+                { new: true }
+            );
+            console.log("Pontuação atualizada com sucesso:", telemetry);
         }
 
         const intervalId = setInterval(() => updateTelemetryData(name, password, true), 1000);
@@ -115,23 +136,11 @@ app.get('/dados-telemetry', async (req, res) => {
     }
 });
 
-const isDev = process.env.NODE_ENV !== 'production';
-const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
-
-app.use(express.static(buildPath));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
 });
 
-app.get('/dados-telemetry/:score', (req, res) => {
-    const { score } = req.params;
-    if (!score) {
-        return res.status(400).json({ error: 'Score é necessário' });
-    }
-    io.emit('score', score);
-    res.json({ message: 'Atualização de telemetria iniciada', score });
-});
 
 app.get('/todos-dados-telemetry', async (req, res) => {
     try {

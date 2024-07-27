@@ -1,0 +1,22 @@
+.popup {
+    position: fixed;
+    top: 10px;
+    left: -100%;
+    /* Inicialmente escondido à esquerda */
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    transition: left 0.5s ease-in-out;
+    z-index: 1000;
+}
+
+.popup-show {
+    left: 0;
+    /* Move o popup para visível */
+}

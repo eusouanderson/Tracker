@@ -4,7 +4,9 @@ const mongoose = require('mongoose');
 const telemetrySchema = new mongoose.Schema({
     gamer: {
         user: String,
-        password: String
+        password: String,
+        connected: Boolean
+        
     },
     game: {
         connected: Boolean,
@@ -17,7 +19,9 @@ const telemetrySchema = new mongoose.Schema({
         telemetryPluginVersion: String
     },
     score: {
-        score: Number
+        score: Number,
+        timestamp: { type: Date, default: Date.now }
+
     },
     truck: {
         id: String,

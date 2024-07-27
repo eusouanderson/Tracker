@@ -4,6 +4,7 @@ import axios from 'axios';
 import Header from '../../components/Header/Header.js';
 import Footer from '../../components/Footer/Footer.js';
 import Score from '../../components/Score/Score.js'; // Importa o componente Score
+import Popup from '../../components/Popup/Popup';
 import '../../assets/global.css';
 
 const Championships = () => {
@@ -13,6 +14,8 @@ const Championships = () => {
     const [expandedIndex, setExpandedIndex] = useState(null);
     const [expandedJobIndex, setExpandedJobIndex] = useState(null);
     const [showTrailerData, setShowTrailerData] = useState(null);
+    const [popupMessage, setPopupMessage] = useState('');
+    
 
     const API_BASE_URL = `${window.location.protocol}//${window.location.host}`;
 
@@ -34,6 +37,8 @@ const Championships = () => {
         };
 
         fetchTelemetryData();
+
+        const interval = setInterval(fetchTelemetryData, 1000);
 
         const handleTelemetryUpdate = (data) => {
             console.log('Received telemetry update:', data); // Adiciona um log para verificar dados recebidos
@@ -58,6 +63,7 @@ const Championships = () => {
         console.log('Socket.IO connection established with API_BASE_URL:', API_BASE_URL);
 
         return () => {
+            clearInterval(interval);
             socket.disconnect();
             console.log('Socket.IO connection disconnected');
         };
@@ -122,6 +128,10 @@ const Championships = () => {
         setShowTrailerData(showTrailerData === index ? null : index);
     };
 
+    const handlePopupClose = () => {
+        setPopupMessage('');
+    };
+
     return (
         <div className="championships-container">
             <Header />
@@ -133,11 +143,12 @@ const Championships = () => {
                     {sortedTelemetryData.map((data, index) => (
                         <div key={index} className="championship-item">
                             <h1>{index + 1}° Posição - Motorista: {data.gamer?.user || 'Desconhecido'}</h1>
-                            <p><span>Jogador Conectado:</span> {data.game?.connected ? 'Sim' : 'Não'}</p>
+                            <p><span>Jogador Conectado:</span> {data.gamer?.connected ? 'Sim' : 'Não'}</p>
+                            <p><span>Jogo Ativo:</span> {data.game?.connected ? 'Sim' : 'Não'} </p>
                             <p><span>Tempo de Jogo:</span> {formatDate(data.game?.time)}</p>
                             <p><span>Tempo Ajustado:</span> {adjustGameTime(data.game?.time, data.game?.timeScale)}</p>
                             <p><span>Jogo Pausado:</span> {data.game?.paused ? 'Sim' : 'Não'}</p>
-                            <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game?.nextRestStopTime)}</p>
+                            <p><span>Próximo Tempo Para Descanso:</span> {formatDate(data.game?.nextRestStopTime) || 'Nenhum'}</p>
                             <p><span>Versão do Plugin de Telemetria:</span> {data.game?.telemetryPluginVersion}</p>
 
                             <Score data={data} />
@@ -170,12 +181,14 @@ const Championships = () => {
                             {expandedIndex === index && (
                                 <div className="truck-data">
                                     <h3>Dados do Caminhão</h3>
-                                    <p><span>Marca:</span> {data.truck?.brand}</p>
+                                    <p><span>Marca:</span> {data.truck?.id}</p>
                                     <p><span>Modelo:</span> {data.truck?.model}</p>
+                                    <p><span>Velocidade:</span> {data.truck?.speed} <span>km/h</span></p>
+                                    <p><span>Controle de Cruzeiro:</span> {data.truck?.cruiseControlOn ? 'Ligado' : 'Desligado'}</p>
+                                    <p><span>Velocidade de Cruzeiro:</span> {data.truck?.cruiseControlSpeed}<span> km/h</span></p>
                                     <p><span>Consumo de Combustível:</span> {data.truck?.fuelAverageConsumption} L/100km</p>
                                     <p><span>Combustível:</span> {data.truck?.fuel} L</p>
                                     <p><span>Capacidade do Combustível:</span> {data.truck?.fuelCapacity} L</p>
-                                    <p><span>Velocidade:</span> {data.truck?.speed} km/h</p>
                                     <p><span>Rotação do Motor:</span> {data.truck?.rpm}</p>
                                     <p><span>Temperatura do Motor:</span> {data.truck?.engineTemperature} °C</p>
                                 </div>
@@ -191,10 +204,10 @@ const Championships = () => {
                             {showTrailerData === index && data.trailer && (
                                 <div className="trailer-data">
                                     <h3>Dados do Reboque</h3>
-                                    <p><span>Marca:</span> {data.trailer.brand}</p>
-                                    <p><span>Modelo:</span> {data.trailer.model}</p>
-                                    <p><span>Capacidade:</span> {data.trailer.capacity} kg</p>
-                                    <p><span>Estado:</span> {data.trailer.condition}</p>
+                                    <p><span>Marca:</span> {data.trailer.id}</p>
+                                    <p><span>Modelo:</span> {data.trailer.name}</p>
+                                    <p><span>Capacidade:</span> {data.trailer.mass} kg</p>
+                                    <p><span>Estado:</span> {data.trailer.wear}</p>
                                 </div>
                             )}
                         </div>
@@ -203,6 +216,7 @@ const Championships = () => {
             ) : (
                 !loading && <p className="no-data">Nenhum dado disponível.</p>
             )}
+            <Popup message={popupMessage} onClose={handlePopupClose} />
             <Footer />
         </div>
     );

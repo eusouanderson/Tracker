@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; 
-//import './Header.css';
+import { Link } from 'react-router-dom';
+import './Header.css';
 import '../../assets/global.css';
 
 const Header = () => {
@@ -9,8 +9,8 @@ const Header = () => {
             <h1>Game Tracker</h1>
             <nav>
                 <ul>
-                    <li><Link to="/">Home</Link></li>
-                    <li><Link to="/championships">Championships</Link></li>
+                    <li><Link to="/">Inicio</Link></li>
+                    <li><Link to="/championships">Campeonatos</Link></li>
                     {/* Adicione outros links conforme necessário */}
                 </ul>
             </nav>
