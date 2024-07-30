@@ -81,7 +81,7 @@ const updateTelemetryData = async (name, password, connected, score = null) => {
     }
 };
 
-const isDev = process.env.NODE_ENV !== 'production';
+const isDev = process.env.NODE_ENV === 'production';
 const buildPath = isDev ? path.join(__dirname, '..', 'build') : path.join(path.dirname(process.execPath), 'build');
 
 app.use(express.static(buildPath));

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../assets/global.css';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -78,7 +79,7 @@ const Register = () => {
                     <h3>Conecção estabelecida :</h3>
                     <p>Jogador Conectado: {name}</p>
                     <p>Nome do Jogo: Euro Truck Simulator</p>
-                    <h3>Vá para a página de Championships</h3>
+                    <Link to="/championships">Ir para Campeonatos</Link>
                 </div>
             )}
         </div>

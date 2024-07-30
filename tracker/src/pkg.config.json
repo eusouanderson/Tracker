@@ -1,4 +1,8 @@
 {
+    "windows": {
+        "icon": "public/favicon.ico",
+        "hide": true
+    },
     "assets": [
         "node_modules/axios/**/*",
         "node_modules/bson/**/*",
